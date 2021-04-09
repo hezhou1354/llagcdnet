@@ -1,0 +1,13 @@
+Package: gcdnet2
+Title: LASSO and Elastic Net (Adaptive) Penalized Least Squares,
+        Logistic Regression, HHSVM, Squared Hinge SVM, Expectile
+        Regression and Probit Regression using a Fast GCD Algorithm
+Version: 1.0.0
+Date: 2021-05-03
+Author: Yi Yang <yi.yang6@mcgill.ca>, Hui Zou <hzou@stat.umn.edu>
+Maintainer: Yi Yang <yi.yang6@mcgill.ca>
+Depends: Matrix, methods
+Description: A generalized coordinate descent (GCD) algorithm for computing the solution path of the hybrid Huberized support vector machine (HHSVM) and its generalization, including the LASSO and elastic net (adaptive) penalized least squares, logistic regression, HHSVM, squared hinge loss SVM, expectile regression and probit regression.
+License: GPL-2
+URL: https://github.umn.edu/zhou1354/gcdnet2
+

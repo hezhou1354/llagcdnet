@@ -1,0 +1,2 @@
+R CMD build gcdnet2
+R CMD check gcdnet2_*.tar.gz
