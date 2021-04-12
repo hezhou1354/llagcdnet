@@ -29,7 +29,6 @@ cv.logitpath <- function(outlist, lambda, x, y, foldid,
         misclass = (y != ifelse(predmat > 0, 1, -1)))
     N <- length(y) - apply(is.na(predmat), 2, sum)
     cvm <- apply(cvraw, 2, mean, na.rm = TRUE)
-    cvsd <- sqrt(apply(scale(cvraw, cvm, FALSE)^2, 2, mean, na.rm = TRUE)/(N - 
-        1))
+    cvsd <- sqrt(apply(scale(cvraw, cvm, FALSE)^2, 2, mean, na.rm = TRUE)/(N - 1))
     list(cvm = cvm, cvsd = cvsd, name = typenames[pred.loss])
 } 

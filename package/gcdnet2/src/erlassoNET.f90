@@ -258,6 +258,9 @@ SUBROUTINE erlassoNETpath (omega, lam2, maj, nobs, nvars, x, y, ju, pf, pf2, dfm
       mnl = Min (mnlam, nlam)
       bigm = 2.0D0 * Max((1 - omega), omega)
       maj = bigm * maj
+      ! begin He
+      alf = 1.0D0
+      ! end He
       IF (flmin < 1.0D0) THEN
          flmin = Max (mfl, flmin)
          alf = flmin ** (1.0D0/(DBLE(nlam)-1.0D0))
@@ -303,7 +306,7 @@ SUBROUTINE erlassoNETpath (omega, lam2, maj, nobs, nvars, x, y, ju, pf, pf2, dfm
                DO k = 1, nvars
                   IF (ju(k) /= 0) THEN
                      oldb = b (k)
-					 u = 0.0D0
+                     u = 0.0D0
                      DO i = 1, nobs
                      IF (r(i) <= 0.0D0) THEN
                          dl (i) = 2.0D0 * (1 - omega) * r(i)
@@ -359,7 +362,7 @@ SUBROUTINE erlassoNETpath (omega, lam2, maj, nobs, nvars, x, y, ju, pf, pf2, dfm
                   DO j = 1, ni
                      k = m (j)
                      oldb = b (k)
-					 u = 0.0D0
+                     u = 0.0D0
                      DO i = 1, nobs
                      IF (r(i) <= 0.0D0) THEN
                          dl (i) = 2.0D0 * (1 - omega) * r(i)

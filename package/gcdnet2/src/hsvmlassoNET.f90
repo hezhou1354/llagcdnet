@@ -250,6 +250,9 @@ SUBROUTINE hsvmlassoNETpath (delta, lam2, maj, nobs, nvars, x, y, ju, &
       ni = npass
       mnl = Min (mnlam, nlam)
       maj = maj / delta
+      ! begin He
+      alf = 1.0D0
+      ! end He
       IF (flmin < 1.0D0) THEN
          flmin = Max(mfl, flmin)
          alf = flmin ** (1.0D0/(DBLE(nlam)-1.0D0))

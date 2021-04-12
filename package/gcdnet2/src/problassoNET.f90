@@ -246,9 +246,6 @@ SUBROUTINE problassoNETpath (lam2, maj, nobs, nvars, x, y, ju, pf, pf2, dfmax, &
       INTEGER :: ni
       INTEGER :: me
       INTEGER, DIMENSION (:), ALLOCATABLE :: mm
-      ! begin He
-      LOGICAL :: upper
-      ! end He
 ! - - - begin - - -
 ! - - - allocate variables - - -
       ALLOCATE (b(0:nvars), STAT=jerr)
@@ -272,7 +269,7 @@ SUBROUTINE problassoNETpath (lam2, maj, nobs, nvars, x, y, ju, pf, pf2, dfmax, &
       mnl = Min (mnlam, nlam)
       ! begin He
       maj = 1.0D0 * maj
-      upper = .FALSE.
+      alf = 1.0D0
       ! end He
       IF (flmin < 1.0D0) THEN
          flmin = Max (mfl, flmin)
