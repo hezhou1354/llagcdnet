@@ -20,6 +20,10 @@ Yang, Y. and Zou, H. (2012), "An Efficient Algorithm for Computing The HHSVM and
 BugReport: \url{https://github.com/emeryyi/fastcox.git}\cr
 
 
+Fan, J., Xue, L., & Zou, H. (2014), "Strong oracle optimality of folded concave penalized estimation", \emph{Annals of statistics}, 42(3), 819.\cr
+\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4295817/}\cr
+
+
 Friedman, J., Hastie, T., and Tibshirani, R. (2010), "Regularization paths for generalized
 linear models via coordinate descent," \emph{Journal of Statistical Software, 33, 1.}\cr
 \url{http://www.jstatsoft.org/v33/i01/}}

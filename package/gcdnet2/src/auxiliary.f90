@@ -116,7 +116,7 @@ SUBROUTINE chkvars (nobs, nvars, x, ju)
 END SUBROUTINE chkvars
 
 
-subroutine normp ( z, p, pdf )
+
 
 !*****************************************************************************80
 !
@@ -157,6 +157,11 @@ subroutine normp ( z, p, pdf )
 !    Output, DOUBLE PRECISION PDF, the value of the standard normal
 !    distribution at Z.
 !
+
+! --------------------------------------------------
+subroutine normp ( z, p, pdf )
+! --------------------------------------------------
+
   implicit none
 
   DOUBLE PRECISION :: cutoff = 7.071D+00

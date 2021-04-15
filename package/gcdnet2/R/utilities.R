@@ -180,3 +180,16 @@ zeromat <- function(nvars, nalam, vnames, stepnames) {
             1))
 } 
 
+
+## SCAD derivative
+SCAD_deriv <- function(t, a, lambda){
+    if (t <= lambda){
+        p.deriv <- lambda
+    }else if (t >= a*lambda){
+        p.deriv <- 0
+    }else{
+        p.deriv <- (a*lambda - t)/(a-1)
+    }
+    return(p.deriv)
+}
+

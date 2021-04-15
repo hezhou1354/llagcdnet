@@ -73,7 +73,7 @@ gcdnet(x, y, nlambda = 100,
 \details{
 Note that the objective function in \code{gcdnet} is
 \deqn{Loss(y, X, beta))/N + lambda1 * |beta| + 0.5 * lambda2 * beta^2}
-where the penalty is a combination of L1 and L2 term. Users can specify the loss function to use, options include Huberized squared hinge loss, Squared hinge loss, least square loss, logistic regression and expectile regression loss. Users can also tweak the penalty by choosing different \eqn{lambda2} and penalty factor. 
+where the penalty is a combination of L1 and L2 term. Users can specify the loss function to use, options include Huberized squared hinge loss, Squared hinge loss, least square loss, logistic regression, expectile regression loss and probit regression loss. Users can also tweak the penalty by choosing different \eqn{lambda2} and penalty factor. 
 
 For computing speed reason, if models are not converging or running slow, consider increasing \code{eps}, decreasing
 \code{nlambda}, or increasing \code{lambda.factor} before increasing
