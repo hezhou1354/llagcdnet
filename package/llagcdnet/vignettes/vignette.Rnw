@@ -1,0 +1,726 @@
+\documentclass[11pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{amsfonts}
+\usepackage{bbm}
+\usepackage{amsthm}
+\usepackage{newtxmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{Sweave}
+\usepackage{natbib}
+\usepackage{bm}
+\usepackage[font={small, it}]{caption}
+\usepackage[margin=1in,footskip=0.25in]{geometry}
+
+
+
+
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}%[ruled,vlined]{  
+\usepackage{algpseudocode}  
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=cyan,
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bG}{\mathbf{G}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bH}{\mathbf{H}}
+\newcommand{\be}{\mathbf{e}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bbt}{\bm{\beta}}
+\newcommand{\ty}{\tilde{y}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bDelta}{\bm{\Delta}}
+\newcommand{\bB}{\mathbb{B}}
+
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+\renewcommand{\baselinestretch}{1.1}
+
+\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\rhead{He Zhou}  % set your name here
+%\chead{\texttt{llagcdnet}}
+%\renewcommand{\headrulewidth}{0.4pt}
+
+\lstset{language=R,
+	basicstyle=\small\ttfamily,
+	stringstyle=\color{DarkGreen},
+	otherkeywords={0,1,2,3,4,5,6,7,8,9},
+	morekeywords={TRUE,FALSE},
+	deletekeywords={data,frame,length,as,character},
+	keywordstyle=\color{blue},
+	commentstyle=\color{DarkGreen},
+}
+\usepackage{Sweave}
+\graphicspath{{Figures/}}  % set the path of figures
+\usepackage{blindtext}
+\usepackage{scrextend}
+\addtokomafont{labelinglabel}{\bfseries}
+\usepackage{appendix}
+
+%\VignetteIndexEntry{llagcdnet Example}
+
+\begin{document}
+
+\title{\texttt{llagcdnet} Vignette}
+\author{He Zhou (zhou1354@umn.edu)}  %% set your name on the main page
+\date{May 3, 2021}  % suppress the output of date
+\maketitle
+\tableofcontents
+
+\section{Introduction}\label{sec:intro}
+
+\texttt{llagcdnet} is a package that uses a generalized coordinate descent (GCD) algorithm \citep{yang2013efficient} for computing the solution path of the LASSO, elastic net (adaptive), and folded concave (SCAD) penalized least squares, logistic regression, HHSVM, squared hinge loss SVM, expectile regression and probit regression. 
+
+For LASSO and elastic net (adaptive) penalized problems, most of the part is contributed by Yi Yang and Hui Zou. The probit regression, which can also be formulated as a large margin classifier, is contributed by He Zhou.
+
+For folded concave (SCAD) penalized problems, \texttt{llagcdnet} uses the local linear approximation (LLA) \citep{fan2014strong} along with the GCD algorithm for computing the solution path of the least squares, logistic regression, HHSVM, squared hinge loss SVM, expectile regression and probit regression. This part of the package is contributed by He Zhou. 
+
+\subsection{LASSO and Elastic Net (adaptive) Penalty}\label{subsec:intro-net}
+
+Function \texttt{gcdnet} solves the following problem
+
+$$
+\min_{\beta} \frac{1}{N} \sum_{i=1}^{N} \text{Loss}(y_i,\beta_0 + \mathbf{x}_i^\intercal\beta) + \lambda ||\beta||_1 + \frac{\lambda_2}{2}||\beta||_2^2 ,
+$$
+
+for a fixed value of $\lambda_2$ and a grid of values of $\lambda$ covering the entire range, where $\lambda$, $\lambda_2\geq 0$ are regularization parameters. Here $\text{Loss}(y_i,\eta_i)$ is the loss function for observation $i$; e.g. for the least square case it is $\frac{1}{2}(y_i-\eta_i)^2$. The \emph{elastic-net  penalty} is controlled by $\lambda$ and $\lambda_2$, and bridges the gap between lasso ($\lambda_2=0$, the default) and ridge ($\lambda=0$).
+
+Function \texttt{gcdnet} also allows adaptive LASSO or adaptive elastic net that set different weights for different coefficient. Then the penalty becomes
+$$
+\lambda\sum_{j}w_{j}\vert\beta_j\vert + \frac{\lambda_2}{2}\sum_{j}w_{j}^{(2)}\beta_j^2.
+$$
+For fixed value of $\lambda_2$ and fixed adaptive weights $w_j$'s, $w_j^{(2)}$'s, a solution path for a grid of values of $\lambda$ is solved.
+
+The \texttt{fcdnet} algorithms use generalized coordinate descent which can be applied to the loss function that does not have a smooth first derivative everywhere, such as the hybrid Huberized support vector machine (HHSVM) \citep{wang2008hybrid}. It takes advantage of a majorization–minimization trick to make each coordinate-wise update simple and efficient. Due to highly efficient updates and techniques such as warm starts and active-set convergence, this algorithms can compute the solution path very fast. 
+
+The core of package \texttt{llagcdnet} is a set of fortran subroutines, which make for very fast execution.
+
+The package also includes methods for prediction and plotting of \texttt{gcdnet} object, and a function that performs $K$-fold cross-validation for \texttt{gcdnet}.
+
+\subsection{Folded Concave (SCAD) Penalty}\label{subsec:intro-scad}
+
+Function \texttt{lla.gcdnet} solves the following problem
+$$
+\min_{\beta} \frac{1}{N} \sum_{i=1}^{N} \text{Loss}(y_i,\beta_0 + \mathbf{x}_i^\intercal\beta) + P_\lambda(|\beta|) ,
+$$
+where $P_\lambda(|\beta|) = \sum_{j}p_\lambda(|\beta_j|)$ is a \textit{folded concave penalty (SCAD)} \citep{fan2001variable} with the derivative
+$$
+P_\lambda^{'}(t) = \lambda I_{\{t\leq\lambda\}} + \frac{(a\lambda-1)_+}{a-1}I_{\{t >\lambda\}},
+$$
+for some $a > 2$, where $\lambda$ is the regularization parameter. 
+
+
+The local linear approximation (LLA) algorithm \citep{zou2008one, fan2014strong} takes advantage of the special folded concave structure and utilizes the majorization-minimization (MM) principle to turn a concave regularization problem into a sequence of weighted $\ell_1$ penalized problems. Within each LLA iteration, the local linear approximation is the best convex majorization of the concave penalty function (see Theorem 2 of \cite{zou2008one}). Moreover, \cite{fan2014strong} showed that for the SCAD penalized linear regression, logistic regression, precision matrix estimation and quantile regression, the local linear approximation (LLA) algorithm initialized by zero converges to the oracle estimator after three iterations with high probability. 
+
+
+The \texttt{lla.gcdnet} algorithms use the LLA algorithm as the outer loop to turn the folded concave regularization problem into a sequence of weighted $\ell_1$ penalized problems, and the GCD algorithm as the inner loop for solving those weighted $\ell_1$ penalized problems.
+
+The package also includes methods for prediction and plotting of \texttt{lla.gcdnet} object, and a function that performs $K$-fold cross-validation for \texttt{lla.gcdnet}.
+
+
+\section{Installation}\label{sec:install}
+
+The way to obtain \texttt{llgcdnet} is to clone it from the GitHub, generate the ``*.tar.gz" file and install it to R. Type the following command in Unix command to clone the project
+
+\begin{verbatim}
+git clone https://github.umn.edu/zhou1354/llagcdnet.git
+\end{verbatim}
+
+go to the folder containing file ``notes" and folder ``gcdnet" and type the following command in Unix command to generate the ``*.tar.gz" file
+
+\begin{verbatim}
+R CMD build gcdnet2
+\end{verbatim}
+
+Type the following command in R console to install the package
+
+<<eval=FALSE>>=
+install.packages("~/llagcdnet/package/llagcdnet_1.0.0.tar.gz",
+                 repos = NULL, type = "source")
+@
+
+Users may change the \texttt{pkgs} options depending on their locations. Other options such as the directories where to install the packages can be altered in the command. For more details, see \texttt{help(install.packages)}.
+
+Here the R package has been downloaded and installed to the default directories.
+
+\section{Quick Start}\label{sec:quick}
+
+The purpose of this section is to give users a general sense of the package, including the components, what they do and some basic usage. We will briefly go over the main functions, see the basic operations and have a look at the outputs. Users may have a better idea after this section what functions are available, which one to choose, or at least where to seek help. More details are given in later sections.
+
+First, we load the \texttt{llagcdnet} package:
+<<>>=
+library(llagcdnet)
+@
+In this section, we will demonstrate the usage of the package under the Gaussian linear model or ``least squares". We load a set of data created beforehand for illustration. Users can either load their own data or use those saved in the workspace.
+<<>>=
+data(FHT)
+@
+
+\subsection{Basics of \texttt{gcdnet} and Its Related}\label{subsec:quick-gcdnet}
+For the elastic net penalized least squared problem, we fit the model using the most basic call to \texttt{gcdnet}.
+<<>>=
+fit = gcdnet(x=FHT$x, y=FHT$y_reg, method="ls")
+@
+``fit" is an object of class \texttt{gcdnet} that contains all the relevant information of the fitted model for further use. We do not encourage users to extract the components directly. Instead, various methods are provided for the object such as \texttt{plot}, \texttt{print}, \texttt{coef} and \texttt{predict} that enable us to execute those tasks more elegantly.
+
+We can visualize the coefficients by executing the \texttt{plot} function:
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(fit)
+@
+
+Each curve corresponds to a variable. It shows the path of its coefficient against the $\ell_1$-norm of the whole coefficient vector at as $\lambda$ varies. The axis above indicates the number of nonzero coefficients at the current $\lambda$, which is the effective degrees of freedom (\textit{df}) for the lasso. Users may also wish to annotate the curves; this can be done by setting \texttt{label = TRUE} in the plot command.
+
+A summary of the \texttt{gcdnet} path at each step is displayed if we just enter the object name or use the \texttt{print} function:
+<<>>=
+print(fit)
+@
+
+It shows the number of nonzero coefficients (\texttt{Df}) and the value of $\lambda$ (\texttt{Lambda}). By default \texttt{gcdnet} calls for 100 values of \texttt{lambda}.
+
+We can obtain the actual coefficients at one or more $\lambda$'s within the range of the sequence:
+<<>>=
+coef(fit, s=0.1)
+@
+
+(why \texttt{s} and not \texttt{lambda}? In case later we want to allow one to specify the model size in other ways.)
+
+Users can also make predictions at specific $\lambda$'s with new input data:
+<<>>=
+nx = matrix(rnorm(10*100),10,100)
+predict(fit, newx=nx, s=c(0.1,0.05))
+@
+
+The function \texttt{gcdnet} returns a sequence of models for the users to choose from. In many cases, users may prefer the software to select one of them. Cross-validation is perhaps the simplest and most widely used method for that task.
+
+\texttt{cv.gcdnet} is the main function to do cross-validation here, along with various supporting methods such as plotting and prediction. We still act on the sample data loaded before.
+<<>>=
+cvfit = cv.gcdnet(FHT$x, FHT$y_reg, method="ls")
+@
+
+\texttt{cv.gcdnet} returns a \texttt{cv.gcdnet} object, which is ``cvfit" here, a list with all the ingredients of the cross-validation fit. As for \texttt{gcdnet}, we do not encourage users to extract the components directly except for viewing the selected values of $\lambda$. The package provides well-designed functions for potential tasks.
+
+We can plot the object.
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(cvfit)
+@
+
+It includes the cross-validation curve (red dotted line), and upper and lower standard deviation curves along the $\lambda$ sequence (error bars). Two selected $\lambda$'s are indicated by the vertical dotted lines (see below).
+
+We can view the selected $\lambda$'s and the corresponding coefficients. For example,
+<<>>=
+cvfit$lambda.min
+@
+\texttt{lambda.min} is the value of $\lambda$ that gives minimum mean cross-validated error. The other $\lambda$ saved is  \texttt{lambda.1se}, which gives the most regularized model such that error is within one standard error of the minimum. To use that, we only need to replace \texttt{lambda.min} with \texttt{lambda.1se} above.
+<<>>=
+coef(cvfit, s = "lambda.min")
+@
+
+Note that the coefficients are represented in the sparse matrix format. The reason is that the solutions along the regularization path are often sparse, and hence it is more efficient in time and space to use a sparse format. If you prefer non-sparse format, pipe the output through \texttt{as.matrix()}.
+
+Predictions can be made based on the fitted \texttt{cv.gcdnet} object. Let's see a toy example.
+<<>>=
+predict(cvfit, newx = FHT$x[1:5,], s = "lambda.min")
+@
+\texttt{newx} is for the new input matrix and \texttt{s}, as before, is the value(s) of $\lambda$ at which predictions are made.
+
+That is the end of quick start for \texttt{gcdnet}. With the tools introduced so far, users are able to fit the entire elastic net family, including ridge regression, using squared-error loss. In the package, there are many more options that give users a great deal of flexibility. To learn more, move on to later sections.
+
+\subsection{Basics of \texttt{lla.gcdnet} and Its Related}
+For the folded concave penalized least squared problem, we fit the model using the most basic call to \texttt{lla.gcdnet}.
+<<>>=
+lla.fit = lla.gcdnet(x=FHT$x, y=FHT$y_reg, method="ls")
+@
+``fit" is an object of class \texttt{lla.gcdnet} that contains all the relevant information of the fitted model for further use. Again, we do not encourage users to extract the components directly. Instead, various methods are provided for the object such as \texttt{plot}, \texttt{print}, \texttt{coef} and \texttt{predict} that enable us to execute those tasks more elegantly.
+
+We can also visualize the coefficients by executing the \texttt{plot} function:
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(lla.fit, xvar="lambda")
+@
+
+ach curve corresponds to a variable. It shows the path of its coefficient as regularization parameter $\lambda$ varies. The axis above indicates the number of nonzero coefficients at the current $\lambda$, which is the effective degrees of freedom (\textit{df}) for the lasso. Users may also wish to annotate the curves; this can be done by setting \texttt{label = TRUE} in the plot command.
+
+A summary of the \texttt{lla.gcdnet} path at each step is displayed if we just enter the object name or use the \texttt{print} function:
+<<>>=
+print(lla.fit)
+@
+
+It shows the nonzero coefficients (\texttt{Df}) and the value of $\lambda$ (\texttt{Lambda}). By default \texttt{lla.gcdnet} calls for 100 values of \texttt{lambda}.
+
+We can obtain the actual coefficients at one or more $\lambda$'s within the range of the sequence:
+<<>>=
+coef(lla.fit, s=0.1)
+@
+
+Users can also make predictions at specific $\lambda$'s with new input data:
+<<>>=
+nx = matrix(rnorm(10*100),10,100)
+predict(lla.fit,newx=nx,s=c(0.1,0.05))
+@
+
+The function \texttt{lla.gcdnet} returns a sequence of models for the users to choose from. In many cases, users may prefer the software to select one of them. Cross-validation is perhaps the simplest and most widely used method for that task.
+
+\texttt{cv.lla.gcdnet} is the main function to do cross-validation here, along with various supporting methods such as plotting and prediction. We still act on the sample data loaded before.
+<<>>=
+lla.cvfit = cv.lla.gcdnet(FHT$x, FHT$y_reg, method="ls")
+@
+Function \texttt{cv.lla.gcdnet`} returns a \texttt{cv.lla.gcdnet} object, which is ``lla.cvfit" here, a list with all the ingredients of the cross-validation fit. 
+
+We can plot the \texttt{cv.lla.gcdnet} object.
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(lla.cvfit)
+@
+
+It includes the cross-validation curve (red dotted line), and upper and lower standard deviation curves along the $\lambda$ sequence (error bars). Two selected $\lambda$'s are indicated by the vertical dotted lines (see below).
+
+We can view the selected $\lambda$'s and the corresponding coefficients. For example,
+<<>>=
+lla.cvfit$lambda.min
+@
+\texttt{lambda.min} is the value of $\lambda$ that gives minimum mean cross-validated error. The other $\lambda$ saved is  \texttt{lambda.1se}, which gives the most regularized model such that error is within one standard error of the minimum. To use that, we only need to replace \texttt{lambda.min} with \texttt{lambda.1se} above.
+<<>>=
+coef(lla.cvfit, s = "lambda.min")
+@
+
+Predictions can be made based on the fitted \texttt{cv.lla.gcdnet} object. Let's see a toy example.
+<<>>=
+predict(lla.cvfit, newx = FHT$x[1:5,], s = "lambda.min")
+@
+\texttt{newx} is for the new input matrix and \texttt{s}, as before, is the value(s) of $\lambda$ at which predictions are made.
+
+That is the end of quick start for \texttt{lla.gcdnet} and its related functions. With the tools introduced so far, users are able to fit the folded concave (SCAD) penalized regression or classification problems. In the package, there are many more options that give users a great deal of flexibility. To learn more, move on to later sections.
+
+\section{Hybrid Huberized Support Vector Machine (HHSVM)}\label{sec:hhsvm}
+
+Hybrid Huberized support vector machine (HHSVM) is proposed in \cite{wang2008hybrid}. It uses the elastic net penalty for regularization and variable selection and uses the Huberized squared hinge loss for efficient computation. The HHSVM poses a major challenge for applying the coordinate descent algorithm, because the Huberized hinge loss function does not have a smooth first derivative everywhere. As a result, the coordinate descent algorithm for the elastic net penalized logistic regression \citep{friedman2010regularization} cannot be used for solving the HHSVM. To overcome the computational difficulty, \cite{yang2013efficient} propose a new generalized coordinate descent (GCD) algorithm for solving the solution paths of the HHSVM.
+
+All the functions and methods discussed in the following part of this section can be applied to penalized least squares, logistic regression, probit regression, squared hinge SVM and expectile regression. We just use HHSVM as an detailed example to show respect to the work done by \cite{yang2013efficient}. And HHSVM is the motivation of the GCD algorithm.
+
+
+\subsection{LASSO and Elastic Net (Adaptive) Penalized HHSVM}\label{subsec:hhsvm-net}
+
+\subsubsection{Model and Algorithm}
+
+\texttt{hhsvm} is the default family option in the function \texttt{gcdnet}. Suppose we have observations $\mathbf{x}_i \in \mathbb{R}^p$ and the responses $y_i \in \{-1,1\}, i = 1, \ldots, N$. The objective function for the elastic net penalized HHSVM is
+$$
+\min_{\beta_0,\beta}\frac{1}{N}\sum_{i=1}^{N}\phi_c\left(y_i(\beta_0+\mathbf{x}_i^\intercal\beta)\right) + P_{\lambda,\lambda_2}(\beta),
+$$
+where $P_{\lambda,\lambda_2}(\beta)=\lambda\Vert\beta\Vert_1 + \frac{\lambda_2}{2}\Vert\beta\Vert_2^2$, $\phi_c(\cdot)$ is the Huberized hinge loss
+$$
+\phi_c(t)=\left\{
+\begin{matrix}
+0,  &t>1 \\
+(1-t)^2/2\delta,  &1-\delta<t\leq 1 \\
+1-t-\delta/2,  &t\leq 1-\delta
+\end{matrix}
+\right.
+$$
+Generalized coordinate descent can be applied to solve the problem. Specifically, suppose we have current estimates $\tilde{\beta_0}$ and $\tilde{\beta}$. We want to update the $j$-th coordinate of $\beta$. The current penalized HHSVM objective function can be majorized by a penalized quadratic function defined as
+$$
+Q(\beta_j\vert\tilde{\beta}_0,\tilde{\beta}) = \frac{1}{N}\sum_{i=1}^{N}\phi_c(r_i) + \left(\frac{1}{N}\sum_{i=1}^{N}\phi_c^{'}(r_i)y_ix_{ij}\right)(\beta_j-\tilde{\beta}_j) + \frac{1}{\delta}(\beta_j-\tilde{\beta}_j)^2+p_{\lambda,\lambda_2}(\beta_j)
+$$
+where $\phi_c^{'}(t)$ is the first derivative of $\phi_c(t)$ and $r_i=y_i(\tilde{\beta}_0+\mathbf{x}_i^\intercal\tilde{\beta})$ is the current margin. We can easily solve the minimizer of the above penalized quadratic function by a simple soft-thresholding rule \citep{zou2005regularization}:
+$$
+\tilde{\beta}_j \leftarrow\frac{S(\frac{2}{\delta}\tilde{\beta}_j-\frac{1}{N}\sum_{i=1}^{N}\phi_c^{'}(r_i)y_ix_{ij},\lambda)}{\frac{2}{\delta}+\lambda_2},
+$$
+
+where $S(z,t)=(|z|-t)_+\text{sgn}(z)$. This formula above applies when the \texttt{x} variables are standardized to have zero mean and unit variance; it is slightly more complicated when they are not. 
+
+The same trick is used to update intercept $\beta_0$:
+$$
+\tilde{\beta}_0\leftarrow\tilde{\beta}_0-\frac{\delta}{2}\frac{1}{N}\sum_{i=1}^{N}\phi_c^{'}(r_i)y_i.
+$$
+
+\subsubsection{Function \texttt{gcdnet}: Augments and Example}
+
+\texttt{gcdnet} provides various options for users to customize the fit. We introduce some commonly used options here and they can be specified in the \texttt{gcdnet} function.
+
+\begin{itemize}
+  \item \texttt{nlambda}: the number of $\lambda$ values in the sequence. Default is 100.
+  
+  \item \texttt{lambda.factor}: the factor for getting the minimal lambda in \texttt{lambda} sequence, where \texttt{min(lambda) = lambda.factor * max(lambda)}. \texttt{max(lambda)} is the smallest value of lambda for which all coefficients are zero. The default depends on the relationship between $N$ (the number of rows in the matrix of predictors) and $p$ (the number of predictors). If $N > p$, the default is $0.0001$, close to zero. If $N<p$, the default is $0.01$. A very small value of lambda.factor will lead to a saturated fit. It takes no effect if there is user-defined lambda sequence.
+  
+  \item \texttt{lambda}: a user supplied \texttt{lambda} sequence. Typically, by leaving this option unspecified users can have the program compute its own lambda sequence based on \texttt{nlambda} and \texttt{lambda.factor}. Supplying a value of \texttt{lambda} overrides this. It is better to supply a decreasing sequence of \texttt{lambda} values than a single (small) value, if not, the program will sort user-defined \texttt{lambda} sequence in decreasing order automatically.
+  
+  \item \texttt{lambda2}: regularization parameter for the quadratic penalty of the coefficients.
+  
+  \item \texttt{pf}: the $\ell_1$ penalty factor of length $p$ used for adaptive LASSO or adaptive elastic net. Separate $\ell_1$ penalty weights can be applied to each coefficient of beta to allow different $\ell_1$ shrinkage. Can be 0 for some variables, which implies no $\ell_1$ shrinkage, and results in that variable always being included in the model. Default is 1 for all variables (and implicitly infinity for variables listed in exclude).
+  
+  \item \texttt{pf2}: the $\ell_2$ penalty factor of length $p$ used for adaptive LASSO or adaptive elastic net. Separate $\ell_2$ penalty weights can be applied to each coefficient of beta to allow different $\ell_2$ shrinkage. Can be 0 for some variables, which implies no $\ell_2$ shrinkage. Default is 1 for all variables.
+  
+  \item \texttt{exclude}: indices of variables to be excluded from the model. Default is none. Equivalent to an infinite penalty factor.
+  
+  \item \texttt{standardize}: a logical flag for variable standardization, prior to fitting the model sequence. If \texttt{TRUE}, \texttt{x} matrix is normalized such that \texttt{x} is centered (i.e. $\sum_{i}{x}_{ij}=0$), and sum squares of each column $\frac{1}{N}\sum_{i}x_{ij}^2=1$. If \texttt{x} matrix is standardized, the ending coefficients will be transformed back to the original scale. Default is \texttt{FALSE}.
+  
+  \item \texttt{delta}: the parameter $\delta$ in the HHSVM model. The value must be greater than 0. Default is 2.
+  
+  \item \texttt{omega}: the parameter $\omega$ in the expectile regression model. The value must be in (0,1). Default is 0.5.
+\end{itemize}
+
+For more information, type \texttt{help(gcdnet)} or simply \texttt{?gcdnet}.
+
+
+As an example of adaptive elastic net penalized HHSVM, we set $\lambda_2 = 0.01$, and different $\ell_1$ and $\ell_2$ penalty weights to different coefficients of $\beta$. To avoid too long a display here, we set \texttt{nlambda} to 20. In practice, however, the number of values of $\lambda$ is recommended to be 100 (default) or more. In most cases, it does not come with extra cost because of the warm-starts used in the algorithm, and for nonlinear models leads to better convergence properties.
+<<>>=
+p <- ncol(FHT$x)
+pf <- c(10,10,10,rep(1,p-3))
+pf2 <- c(rep(1,p-3),0.1,0.1,0.1)
+fit <- gcdnet(x=FHT$x, y=FHT$y, pf=pf, pf2=pf2, delta=1.5,
+              lambda2=0.01, nlambda=20)
+@
+
+\subsubsection{Function \texttt{print}}
+
+We can then print the \texttt{gcdnet} object.
+<<>>=
+print(fit)
+@
+
+This displays the call that produced the object ``fit" and a two-column matrix with columns \texttt{Df} (the number of nonzero coefficients) and \texttt{Lambda} (the corresponding value of $\lambda$).
+
+\subsubsection{Function \texttt{plot}}
+We can plot the fitted object as in the previous section. There are more options in the \texttt{plot} function. 
+
+Users can decide what is on the X-axis. \texttt{xvar} allows two measures: ``norm" for the $\ell_1$-norm of the coefficients (default) and ``lambda" for the log-lambda value.
+
+Users can also label the curves with variable sequence numbers simply by setting \texttt{label = TRUE}.
+
+Let's plot ``fit" against the log-lambda value and with each curve labeled.
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(fit, xvar = "lambda", label = TRUE)
+@
+
+\subsubsection{Function \texttt{coef}}
+We can extract the coefficients and make predictions at certain values of $\lambda$. 
+
+\begin{itemize}
+  \item \texttt{s}: the value(s) of $\lambda$ at which extraction is made. If \texttt{s} is not in the lambda sequence used for fitting the model, the coef function will use linear interpolation to make predictions. The new values are interpolated using a fraction of coefficients from both left and right \texttt{lambda} indices.
+  
+  \item \texttt{type}: two options, ``coefficients" (default), and ``nonzero".
+  \begin{itemize}
+    \item Type ``coefficients" computes the coefficients at the requested values for \texttt{s}.
+    
+    \item Type ``nonzero" returns a list of the indices of the nonzero coefficients for each value of \texttt{s}.
+  \end{itemize}
+\end{itemize}
+
+A simple example is:
+<<>>=
+coef(fit, type="coef", s = 0.03)
+coef(fit, type="nonzero", s = 0.03)
+@
+
+\subsubsection{Function \texttt{predict}}
+Users can make predictions from the fitted object. 
+
+\begin{itemize}
+  \item \texttt{newx}: a matrix of new values for \texttt{x}.
+  
+  \item \texttt{s}: value(s) of the penalty parameter lambda at which predictions are required.
+  
+  \item \texttt{type}: the type of prediction required:
+  \begin{itemize}
+    \item  Type \texttt{"link"} gives the linear predictors for classification problems and gives predicted response for regression problems.
+    \item Type \texttt{"class"} produces the class label corresponding to the maximum probability. Only available for classification problems.
+  \end{itemize}
+\end{itemize}
+
+For example,
+<<>>=
+predict(fit, newx = FHT$x[1:5,], type = "class", s = 0.05)
+@
+gives the fitted values for the first 5 observations at $\lambda = 0.05$. If multiple values of \texttt{s} are supplied, a matrix of predictions is produced.
+
+\subsubsection{Function \texttt{cv.gcdnet}}
+Users can customize $K$-fold cross-validation. In addition to all the \texttt{gcdnet} parameters, \texttt{cv.gcdnet} has its special parameters including 
+
+\begin{itemize}
+  \item \texttt{nfolds}: number of folds - default is 5. Although \texttt{nfolds} can be as large as the sample size (leave-one-out CV), it is not recommended for large datasets. Smallest value allowable is \texttt{nfolds}=3.
+  
+  \item \texttt{foldid}: an optional vector of values between 1 and \texttt{nfold} identifying what fold each observation is in. If supplied, \texttt{nfold} can be missing.
+  
+  \item \texttt{pred.loss}: loss function to use for cross-validation error. Valid options are:
+  \begin{itemize}
+    \item \texttt{"loss"}: Margin based loss function, which is the default option. When use least square loss \texttt{method="ls"}, it gives mean square error (MSE). When use expectile regression loss \texttt{method="er"}, it gives asymmetric mean square error (AMSE).
+    \item \texttt{"misclass"}: Misclassification error. Only available for classification.
+  \end{itemize}
+  \item \texttt{delta}: parameter only used in HHSVM for computing margin based loss function, only available for \texttt{pred.loss = "loss"}.
+\end{itemize}
+
+
+As an example,
+<<>>=
+cvfit = cv.gcdnet(FHT$x, FHT$y, lambda2=0.1, pred.loss="misclass", 
+                  nfolds = 5, delta=1.5)
+@
+does 5-fold cross-validation, based on misclassification criterion.
+
+
+Functions \texttt{coef} and \texttt{predict} on \texttt{cv.gcdnet} object are similar to those for a \texttt{gcdnet} object, except that two special strings are also supported by \texttt{s} (the values of $\lambda$ requested):
+
+\begin{itemize}
+  \item \texttt{"lambda.1se"}: the largest value of \texttt{lambda} such that error is within 1 standard error of the minimum.
+  
+  \item \texttt{"lambda.min"}: the optimal value of \texttt{lambda} that gives minimum cross validation error.
+  
+\end{itemize}
+
+<<>>=
+cvfit$lambda.min
+coef(cvfit, s = "lambda.min")
+predict(cvfit, newx = FHT$x[1:5,], s = "lambda.min")
+@
+
+\subsection{Folded Concave (SCAD) Penalized HHSVM}\label{subsec:hhsvm-scad}
+
+\subsubsection{Model and Algorithm}
+\texttt{hhsvm} is also the default family option in the function \texttt{lla.gcdnet}. The objective function for the folded concave (SCAD) penalized HHSVM is
+$$
+\min_{\beta_0,\beta}\frac{1}{N}\sum_{i=1}^{N}\phi_c\left(y_i(\beta_0+\mathbf{x}_i^\intercal\beta)\right) + P_{\lambda}(|\beta|),
+$$
+where $P_\lambda(|\beta|)= \sum_{j}p_\lambda(|\beta_j|)$ is the folded concave (SCAD) penalty. The local linear approximation (LLA) algorithm along with the GCD algorithm can be applied to solve this problem. Specifically, suppose the current estimates are $\tilde{\beta}_0$ and $\tilde{\beta}$, then the updated estimates are the solution to the following weighted LASSO penalized problem:
+$$
+\min_{\beta_0,\beta}\frac{1}{N}\sum_{i=1}^{N}\phi_c\left(y_i(\beta_0+\mathbf{x}_i^\intercal\beta)\right) + \sum_{j=1}^{p}p_\lambda^{'}(|\tilde{\beta}_j|)|\beta_j|.
+$$
+
+This problem can be easily solved by the generalized coordinate descent (GCD) algorithm discussed in the previous section.
+
+\subsubsection{Function \texttt{lla.gcdnet} and Its Related}
+The usage of function \texttt{lla.gcdnet} is similar to function \texttt{gcdnet}. Here's an example of folded concave (SCAD) penalized HHSVM:
+<<>>=
+lla.fit = lla.gcdnet(FHT$x, FHT$y, nlambda=20, lambda.factor=0.01, delta=1.5)
+@
+The $\lambda$ sequence is unspecified, so the program computes its own \texttt{lambda} sequence based on \texttt{nlambda} and \texttt{lambda.factor}.
+
+
+All those functions used to deal with the \texttt{gcdnet} object can also be applied similarly to the \texttt{lla.gcdnet}. Those include \texttt{print}, \texttt{coef}, \texttt{predict}, \texttt{cv.lla.gcdnet}. 
+
+To visualize the coefficients, we use the \texttt{plot} function.
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(lla.fit, xvar = "lambda", label = TRUE)
+@
+
+We can extract the coefficients at requested values of $\lambda$ by using the function \texttt{coef} and make predictions by \texttt{predict}. The usage is similar and we only provide an example of \texttt{predict} here.
+<<>>=
+predict(lla.fit, newx = FHT$x[1:5,], s = c(0.1, 0.01))
+@
+The prediction result is saved in a two column matrix containing the prediction for each new observation (row) and each $\lambda$ (column).
+
+We can also do $K$-fold cross-validation for \texttt{lla.gcdnet}. The options are almost the same as the function \texttt{cv.gcdnet}.
+<<>>=
+lla.cvmfit = cv.lla.gcdnet(FHT$x, FHT$y, pred.loss="loss", nlambda=50)
+@
+We plot the resulting \texttt{cv.lla.gcdnet} object ``lla.cvmfit".
+<<fig.width=5, fig.height=5, fig.align="center">>=
+plot(lla.cvmfit)
+@
+
+To show explicitly the selected optimal values of $\lambda$, type
+<<>>=
+lla.cvmfit$lambda.min
+lla.cvmfit$lambda.1se
+@
+As before, the first one is the value at which the minimal mean squared error is achieved and the second is for the most regularized model whose mean squared error is within one standard error of the minimal.
+
+\section{Penalized Large Margin Classifier}\label{sec:lmc}
+The GCD algorithm can be generalized for solving a class of large margin classifiers \citep{yang2013efficient}, including Huberized SVM, squared SVM, logistic regression and probit regression.
+
+Suppose we are given $N$ pairs of training data $\{\mathbf{x}_i,y_i\}$ for $i=1,\cdots,n$ where $\mathbf{x}_i\in\mathbb{R}^{p}$ are predictors and $y_i\in\{-1,1\}$ denotes class labels. Without loss of generality assume that the input data are standardized and centerized: $\frac{1}{N}\sum_{i=1}^{N}x_{ij}=0$, $\frac{1}{N}\sum_{i=1}^{N}x_{ij}^2=1$ for $j=1,\cdots,p$. Define a penalized large margin classifier as follows:
+$$
+\min_{\beta_0,\beta}\frac{1}{N}\sum_{i=1}^{N}L\left(y_i(\beta_0+\mathbf{x}_i^\intercal\beta)\right)+P(|\beta|)
+$$
+where $L(\cdot)$ is a convex loss function and $P(|\beta|)$ is the penalty funciton. For elastic net penalty, $P_{\lambda,\lambda_2}(|\beta|)=\sum_{j=1}^{p}\lambda|\beta_j|+\frac{\lambda_2}{2}\beta_j^2$; for folded concave (SCAD) penalty, $P_{\lambda}(|\beta|)=\sum_{j=1}^{p}p_\lambda(|\beta_j|)$, where $p_\lambda(t)$ is the folded concave (SCAD) function defined in the section \ref{sec:intro}
+
+To generalized the GCD algorithm, we assume that the loss function $L$ satisfies the following \textit{quadratic majorization condition} with coefficient $M$:
+$$
+L(t+a)\leq L(t)+L^{'}(t)a+\frac{M}{2}a^2,\quad\forall t, a.
+$$
+Given the current estimates $\tilde{\beta}_0$ and $\tilde{\beta}$. Suppose we want to update the $j$-th coordinate, $j\in\{0,1,\cdots,p\}$. The objective function could be majorized by a penalized quadratic funcion:
+$$
+Q(\beta_j|\tilde{\beta}_0,\tilde{\beta}):=\frac{1}{N}\sum_{i=1}^{N}\left[
+L(r_i) + L^{'}(r_i)y_i x_{ij}(\beta_j-\tilde{\beta}_j)+\frac{M}{2}x_{ij}^2(\beta_j-\tilde{\beta}_j)^2
+\right] + P(|\beta|),
+$$
+where $r_i=y_i(\tilde{\beta}_0+\mathbf{x}_i^\intercal\tilde{\beta})$ is the current margin for the $i$-th pair of data. The new update of $j$-th coordinate is given by solving 
+$$
+\min_{\beta_0,\beta}Q(\beta_j|\tilde{\beta}_0,\tilde{\beta})
+$$
+
+\begin{itemize}
+  \item For elastic net penalty, the updates have the following closed-form solution:
+$$
+\tilde{\beta}_j\leftarrow\frac{S\left(M\tilde{\beta}_j-\frac{1}{N}\sum_{i=1}^{N}L^{'}(r_i)y_ix_{ij}, \lambda\right)}{M+\lambda_2},\quad\text{if }j\in\{1,\cdots,p\};
+$$
+and 
+$$
+\tilde{\beta}_0\leftarrow\tilde{\beta}_0-\frac{1}{M}\frac{1}{N}\sum_{i=1}^{N}L^{'}(r_i)y_i.
+$$
+
+\item For folded concave (SCAD) penalty, the problem can be solved by using the local linear approximation (LLA) algorithm along with the GCD algorithm, as discussed in section \ref{subsec:hhsvm-scad}.
+\end{itemize}
+
+
+\subsection{Hybrid Huberized SVM (HHSVM)}
+In section \ref{hhsvm}, we have shown that the Huberized hinge loss has $M=2/\delta$. Examples are also illustrated in that section.
+
+\subsection{Probit Regression}
+The probit regression model is
+$$
+\mathbb{P}(y_i=1|\mathbf{x}_i)=\Phi(\beta_0+\mathbf{x}_i^\intercal\beta),\text{ and }\quad\mathbb{P}(y_i=-1|\mathbf{x}_i)=\Phi(-(\beta_0+\mathbf{x}_i^\intercal\beta)),
+$$
+where $\Phi(\cdot)$ is the cumulative distribution function of the standard normal. Then the negative log-likelihood function (scaled by $1/N$) is
+$$
+\frac{1}{N}\sum_{i=1}^{N} I\{y_i=1\}-\log(\Phi(\beta_0+\mathbf{x}_i^\intercal\beta)) -I\{y_i=-1\}\log(\Phi(-(\beta_0+\mathbf{x}_i^\intercal\beta))),
+$$
+or equivalently, 
+$$
+\frac{1}{N}\sum_{i=1}^{N}-\log(\Phi(y_i(\beta_0+\mathbf{x}_i^{\intercal}\beta))).
+$$
+Thus, we notice that the probit regression has the probit regression loss with the expression $L(t)=-\log(\Phi(t))$ and its derivative is $L^{'}(t)=-\varphi(t)/\Phi(t)$, with $\varphi(\cdots)$ being the probability density function of the standard normal. We proved that its second derivative is bounded by $1$. So it also satisfies the quadratic majorization condition with $M=1$.
+
+\subsubsection{Examples}
+We only need to specify the method as \texttt{method="probit"} in function \texttt{gcdnet}, \texttt{cv.gcdnet}, \texttt{lla.gcdnet} and \texttt{cv.lla.gcdnet}.
+  
+(Adaptive) Elastic Net Penalized Probit Regression: set lambda2 = 0.01; set the first three $\ell_1$ penalty weights as 10 and the rest as 1; set the last three $\ell_2$ penalty weights as 0.1 and the rest as 1.
+  
+<<fig.width=5, fig.height=5, fig.align="center">>=
+p <- ncol(FHT$x)
+# set the first three L1 penalty weights as 10 and the rest are 1.
+pf = c(10,10,10,rep(1,p-3))
+# set the last three L2 penalty weights as 0.1 and the rest are 1.
+pf2 = c(rep(1,p-3),0.1,0.1,0.1)
+# set the L2 penalty parameter lambda2=0.01.
+m.probit <- gcdnet(x=FHT$x, y=FHT$y, pf=pf, pf2=pf2,
+                  lambda2=0.01, method="probit")
+plot(m.probit)
+cv.probit <- cv.gcdnet(FHT$x, FHT$y, method="probit", pf=pf, pf2=pf2,
+                       lambda2=0.01, pred.loss="loss", nfolds=5)
+plot(cv.probit)
+@
+
+Folded Concave (SCAD) Penalized Probit Regression:
+<<fig.width=5, fig.height=5, fig.align="center">>=
+lla.probit <- lla.gcdnet(FHT$x, FHT$y, nlambda=50, method="probit")
+plot(lla.probit)
+@
+<<fig.width=5, fig.height=5, fig.align="center">>=
+cv.lla.probit <- cv.lla.gcdnet(FHT$x, FHT$y, method="probit",
+                              nlambda=50, pred.loss="loss", nfolds=5)
+plot(cv.lla.probit)
+@
+
+\subsection{Logistic Regression}
+The logistic regression has the logistic regression loss with the expression $L(t)=\log(1+e^{-t})$ and its derivative is $L^{'}(t)=-(1+e^t)^{-1}$. Its second derivative is bounded by $1/4$. So it also satisfies the quadratic majorization condition with $M=1/4$.
+
+\subsubsection{Examples}
+We only need to specify the method as \texttt{method="logit"} in function \texttt{gcdnet}, \texttt{cv.gcdnet}, \texttt{lla.gcdnet} and \texttt{cv.lla.gcdnet}.
+
+(Adaptive) Elastic Net Penalized Logistic Regression: set the first three $\ell_1$ penalty weights as 10 and the rest are 1; set the last three $\ell_2$ penalty weights as 0.1 and the rest are 1; set the $\ell_2$ penalty parameter lambda2=0.01.
+  
+<<fig.width=5, fig.height=5, fig.align="center">>=
+p <- ncol(FHT$x)
+# set the first three L1 penalty weights as 10 and the rest are 1.
+pf = c(10,10,10,rep(1,p-3))
+# set the last three L2 penalty weights as 0.1 and the rest are 1.
+pf2 = c(rep(1,p-3),0.1,0.1,0.1)
+# set the L2 penalty parameter lambda2=0.01.
+m.logit <- gcdnet(x=FHT$x, y=FHT$y, pf=pf, pf2=pf2,
+                  lambda2=0.01, method="logit")
+plot(m.logit)
+@
+<<fig.width=5, fig.height=5, fig.align="center">>=
+cv.logit <- cv.gcdnet(FHT$x, FHT$y, method="logit", pf=pf, pf2=pf2,
+                  lambda2=0.01, pred.loss="loss", nfolds=5)
+@
+
+Folded Concave (SCAD) Penalized Logistic Regression:
+<<fig.width=5, fig.height=5, fig.align="center">>=
+lla.logit <- lla.gcdnet(FHT$x, FHT$y, nlambda=20, method="logit")
+plot(lla.logit, xvar="lambda")
+@
+<<>>=
+cv.lla.logit <- cv.lla.gcdnet(FHT$x, FHT$y, method="logit",
+                              nlambda=20, pred.loss="loss", nfolds=5)
+@
+
+
+
+
+\subsection{Squared SVM}
+The squared SVM has a squared hinge loss function with the expression $L(t)=[(1-t)+]^2$ and its derivative $L^{'}(t)=-2(1-t)_+$. \cite{yang2013efficient} shows that it satisfies the \textit{quadratic majorization condition} with $M=4$. 
+
+\subsubsection{Examples}
+We only need to specify the method as \texttt{method="sqsvm"} in function \texttt{gcdnet}, \texttt{cv.gcdnet}, \texttt{lla.gcdnet} and \texttt{cv.lla.gcdnet}.
+
+(Adaptive) Elastic Net Penalized Squared Hinge SVM: 
+<<>>=
+# set lambda2 = 0 and meanwhile specify the L1 penalty weights.
+p <- ncol(FHT$x)
+# set the first three L1 penalty weights as 0.1 and the rest are 1
+pf = c(0.1,0.1,0.1,rep(1,p-3))
+m.sqsvm <- gcdnet(x=FHT$x, y=FHT$y, pf=pf, lambda2=0.1, method="sqsvm")
+@
+
+<<fig.width=5, fig.height=5, fig.align="center">>=
+cvm.sqsvm <- cv.gcdnet(x=FHT$x, y=FHT$y, pf=pf, lambda2=0.1, method="sqsvm",
+                       pred.loss="loss", nfolds=5)
+@
+
+Folded Concave (SCAD) Penalized Squared Hinge SVM: 
+<<fig.width=5, fig.height=5, fig.align="center">>=
+lla.sqsvm <- lla.gcdnet(x=FHT$x, y=FHT$y, nlambda=20, method="sqsvm")
+plot(lla.sqsvm, xvar="lambda")
+@
+
+<<fig.width=5, fig.height=5, fig.align="center">>=
+cv.lla.sqsvm <- cv.lla.gcdnet(FHT$x, FHT$y, method="sqsvm",
+                              nlambda=50, pred.loss="loss", nfolds=5)
+@
+
+
+
+
+
+
+
+
+
+
+
+\nocite*{}  
+%\bibliographystyle{apalike}  %disordered
+%\bibliographystyle{plain}  %ordered by auther
+%\bibliographystyle{unsrt}  %ordered as referenced
+\bibliographystyle{IEEEtranN}
+\bibliography{bibfile}
+
+
+\end{document}
