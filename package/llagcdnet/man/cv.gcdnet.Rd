@@ -82,6 +82,7 @@ cv=cv.gcdnet(FHT$x, FHT$y, method ="hhsvm",
 lambda2=0.1, pred.loss="misclass", nfolds=5, delta=1.5)
 plot(cv)
 
+
 # fit an elastic net penalized least squares 
 # with lambda2 = 0.1 for the L2 penalty. Use the 
 # least square loss as the cross validation 
@@ -92,6 +93,7 @@ set.seed(2011)
 cv1=cv.gcdnet(FHT$x, FHT$y_reg, method ="ls",
 lambda2=0.1,pred.loss="loss", nfolds=5)
 plot(cv1)
+
 
 # To fit a LASSO penalized logistic regression
 # we set lambda2 = 0 to disable the L2 penalty. Use the 
@@ -104,16 +106,17 @@ cv2=cv.gcdnet(FHT$x, FHT$y, method ="logit",
 lambda2 = 0, pred.loss="loss", nfolds=5)
 plot(cv2)
 
+
 # To fit a LASSO penalized probit regression
 # we set lambda2 = 0 to disable the L2 penalty. Use the 
 # probit loss as the cross validation 
 # prediction loss. Use five-fold CV to choose 
 # the optimal lambda for the L1 penalty.
 
-set.seed(2011)
-cv2=cv.gcdnet(FHT$x, FHT$y, method ="probit",
+set.seed(2021)
+cv3=cv.gcdnet(FHT$x, FHT$y, method ="probit",
 lambda2 = 0, pred.loss="loss", nfolds=5)
-plot(cv2)
+plot(cv3)
 }
 \keyword{models}
 \keyword{regression}

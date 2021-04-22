@@ -1,4 +1,4 @@
-library("gcdnet2")
+library("llagcdnet")
 data(FHT)
 set.seed(2011)
 x <- FHT$x

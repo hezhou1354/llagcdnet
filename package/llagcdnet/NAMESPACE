@@ -1,4 +1,4 @@
-useDynLib(gcdnet2, .registration = TRUE)
+useDynLib(llagcdnet, .registration = TRUE)
 
 export(gcdnet, lla.gcdnet,
 cv.gcdnet, cv.lla.gcdnet,

@@ -50,7 +50,7 @@ list with the ingredients of the cross-validation fit.
 		\item{nzero}{number of non-zero coefficients at each \code{lambda}.}
 		\item{name}{a text string indicating type of measure (for plotting
 		purposes).}
-		\item{gcdnet.fit}{a fitted \code{\link{gcdnet}} object for the full data.}
+		\item{lla.gcdnet.fit}{a fitted \code{\link{lla.gcdnet}} object for the full data.}
 		\item{lambda.min}{The optimal value of \code{lambda} that gives minimum
 		cross validation error \code{cvm}.}
 		\item{lambda.1se}{The largest value of \code{lambda} such that error is
@@ -84,7 +84,6 @@ and \code{\link{coef.cv.lla.gcdnet}} methods.}
 # cross validation prediction loss. Use five-fold CV 
 # to choose the optimal lambda for the regularization 
 # parameter.
-
 
 data(FHT)
 set.seed(2021)

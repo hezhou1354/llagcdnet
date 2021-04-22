@@ -8,7 +8,7 @@ Print a summary of the \code{\link{lla.gcdnet}} path at each step along the path
 \method{print}{lla.gcdnet}(x, digits = max(3, getOption("digits") - 3), ...)
 }
 \arguments{
-  \item{x}{fitted \code{\link{gcdnet}} object}
+  \item{x}{fitted \code{\link{lla.gcdnet}} object}
   \item{digits}{significant digits in printout}
   \item{\dots}{additional print arguments}
 }

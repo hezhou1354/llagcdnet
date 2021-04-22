@@ -13,7 +13,7 @@ lla.gcdnet(x, y, lambda = NULL, a = 3.7, delta = 2, omega = 0.5, ...)
 		\item{a}{The constant for the folded concave penalty (SCAD) - default is 3.7.}
 		\item{delta}{parameter \eqn{\delta}{delta} only used in HHSVM for computing margin based loss function. The value must be greater than 0. Default is 2.}
 		\item{omega}{parameter \eqn{\omega}{omega} only used in expectile regression. The value must be in (0,1). Default is 0.5.}
-		\item{\dots}{other arguments that can be passed to gcdnet.}
+		\item{\dots}{other arguments that can be passed to \code{\link{gcdnet}}.}
 
 
 		
@@ -21,9 +21,9 @@ lla.gcdnet(x, y, lambda = NULL, a = 3.7, delta = 2, omega = 0.5, ...)
 
 \details{
 Note that the objective function in \code{lla.gcdnet} is
-\deqn{Loss(y, X, beta))/N + P_lambda(|beta|)}
-where the penalty \eqn{P_lambda(|beta|)} is the folded concave penalty whose derivative is
-\deqn{P'_lambda(t) = lambda*I{t <= lambda} + [max(a*lambda - t, 0)/(a - 1)]*I{t>lambda} }
+\deqn{Loss(y, X, \beta))/N + P_\lambda(|\beta|)}
+where the penalty \eqn{P_\lambda(|\beta|)} is the folded concave penalty whose derivative is
+\deqn{P'_\lambda(t) = \lambda*I\{t \le \lambda\} + [\max(a*\lambda - t, 0)/(a - 1)]*I\{t>\lambda\} }
 for some \eqn{a > 2}, which is specified by the users. Users can also specify the loss function to use, options include Huberized squared hinge loss, Squared hinge loss, least square loss, logistic regression,expectile regression loss and probit regression loss. 
 
 For computing speed reason, if models are not converging or running slow, consider increasing \code{eps} or decreasing \code{nlambda} before increasing \code{maxit}.
