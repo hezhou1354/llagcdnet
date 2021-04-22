@@ -1,4 +1,8 @@
 library("llagcdnet")
+
+##################################################
+## Example : LASSO penalized probit regression  ## 
+##           and check KKT conditions           ##
 data(FHT)
 set.seed(2011)
 x <- FHT$x
@@ -25,6 +29,10 @@ for (i in 1:nvars){
   kkt[i] <- sum(y*x[,i]*dnorm(eta)/pnorm(eta))/(nobs*gcdnet.obj$lambda[30])
 }
 round(kkt,digits=2)
+
+## KKT: first derivative has absolute value 1 for nonzero coefficients
+(nonzero <- which(gcdnet.beta != 0))
+which(round(abs(kkt),digits=2) == 1)
 
 
 
