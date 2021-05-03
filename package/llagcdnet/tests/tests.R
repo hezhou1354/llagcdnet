@@ -35,7 +35,6 @@ round(kkt,digits=2)
 
 which(round(abs(kkt),digits=2) == 1)
 
-all.equal(which(gcdnet.beta != 0), which(round(abs(kkt),digits=2) == 1))
 
 
 

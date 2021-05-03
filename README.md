@@ -1,3 +1,8 @@
+# STAT 8054 Package {llagcdnet}
+## He Zhou (zhou1354@umn.edu)
+
+
+
 To check do
 ```
 cd package

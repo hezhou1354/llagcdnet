@@ -120,7 +120,7 @@ $$
 $$
 For fixed value of $\lambda_2$ and fixed adaptive weights $w_j$'s, $w_j^{(2)}$'s, a solution path for a grid of values of $\lambda$ is solved.
 
-The \texttt{fcdnet} algorithms use generalized coordinate descent which can be applied to the loss function that does not have a smooth first derivative everywhere, such as the hybrid Huberized support vector machine (HHSVM) \citep{wang2008hybrid}. It takes advantage of a majorization–minimization trick to make each coordinate-wise update simple and efficient. Due to highly efficient updates and techniques such as warm starts and active-set convergence, this algorithms can compute the solution path very fast. 
+The \texttt{gcdnet} algorithms use generalized coordinate descent which can be applied to the loss function that does not have a smooth first derivative everywhere, such as the hybrid Huberized support vector machine (HHSVM) \citep{wang2008hybrid}. It takes advantage of a majorization–minimization trick to make each coordinate-wise update simple and efficient. Due to highly efficient updates and techniques such as warm starts and active-set convergence, this algorithms can compute the solution path very fast. 
 
 The core of package \texttt{llagcdnet} is a set of fortran subroutines, which make for very fast execution.
 

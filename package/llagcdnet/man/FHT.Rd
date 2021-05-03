@@ -9,7 +9,7 @@ The \code{FHT} data set has n = 50 observations and p = 100 predictors. The cova
 \format{
   This data frame contains the following columns:
   \describe{
-    \item{x}{a matrix with 100 rows and 5000 columns}
+    \item{x}{a matrix with 50 rows and 100 columns}
     \item{y}{class labels}
     \item{y_reg}{response variable for regression}
 
