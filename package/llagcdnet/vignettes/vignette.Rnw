@@ -589,7 +589,7 @@ $$
 
 
 \subsection{Hybrid Huberized SVM (HHSVM)}
-In section \ref{hhsvm}, we have shown that the Huberized hinge loss has $M=2/\delta$. Examples are also illustrated in that section.
+In section \ref{sec:hhsvm}, we have shown that the Huberized hinge loss has $M=2/\delta$. Examples are also illustrated in that section.
 
 \subsection{Probit Regression}
 The probit regression model is

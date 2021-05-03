@@ -35,6 +35,8 @@ round(kkt,digits=2)
 
 which(round(abs(kkt),digits=2) == 1)
 
+nonzero == which(round(abs(kkt),digits=2) == 1)
+
 
 
 
