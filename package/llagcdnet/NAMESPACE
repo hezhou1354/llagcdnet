@@ -1,7 +1,7 @@
 useDynLib(llagcdnet, .registration = TRUE)
 
-export(gcdnet, lla.gcdnet, lla2.gcdnet
-cv.gcdnet, cv.lla.gcdnet, cv.lla2.gcdnet
+export(gcdnet, lla.gcdnet, lla2.gcdnet,
+cv.gcdnet, cv.lla.gcdnet, cv.lla2.gcdnet,
 cv.hsvmpath,
 cv.logitpath,
 cv.sqsvmpath,
