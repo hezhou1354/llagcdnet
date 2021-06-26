@@ -1,7 +1,7 @@
 useDynLib(llagcdnet, .registration = TRUE)
 
-export(gcdnet, lla.gcdnet,
-cv.gcdnet, cv.lla.gcdnet,
+export(gcdnet, lla.gcdnet, lla2.gcdnet
+cv.gcdnet, cv.lla.gcdnet, cv.lla2.gcdnet
 cv.hsvmpath,
 cv.logitpath,
 cv.sqsvmpath,
@@ -25,8 +25,10 @@ coef.probitpath)
 
 S3method("print","gcdnet")
 S3method("print","lla.gcdnet")
+S3method("print","lla2.gcdnet")
 S3method("coef","gcdnet")
 S3method("coef","lla.gcdnet")
+S3method("coef","lla2.gcdnet")
 S3method(coef,lspath)
 S3method(coef,erpath)
 S3method(coef,hsvmpath)
@@ -35,14 +37,19 @@ S3method(coef,sqsvmpath)
 S3method(coef,probitpath)
 S3method("coef","cv.gcdnet")
 S3method("coef","cv.lla.gcdnet")
+S3method("chef","cv.lla2.gcdnet")
 S3method("plot","gcdnet")
 S3method("plot","lla.gcdnet")
+S3method("plot","lla2.gcdnet")
 S3method("plot","cv.gcdnet")
 S3method("plot","cv.lla.gcdnet")
+S3method("plot","cv.lla2.gcdnet")
 S3method("predict","gcdnet")
 S3method("predict","lla.gcdnet")
+S3method("predict","lla2.gcdnet")
 S3method("predict","cv.gcdnet")
 S3method("predict","cv.lla.gcdnet")
+S3method("predict","cv.lla2.gcdnet")
 S3method(predict,lspath)
 S3method(predict,erpath)
 S3method(predict,hsvmpath)

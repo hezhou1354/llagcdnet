@@ -17,6 +17,9 @@ Description: A generalized coordinate descent (GCD) algorithm for computing the
     coordinate descent (GCD) algorithm for computing the solution path of the folded 
     concave (SCAD) penalized least squares, logistic regression, HHSVM, squared hinge 
     loss SVM, expectile regression and probit regression. 
+             When implementing the LLA algorithm, two options are available. One is three-
+    step LLA initialized by zero; the other is two-step LLA initialized by tuned LASSO 
+    estimator.
 License: GPL-2
 URL: https://github.umn.edu/zhou1354/llagcdnet
 

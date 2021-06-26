@@ -1,5 +1,6 @@
-cv.lla.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass", "loss"), 
-                      nfolds = 5, foldid, delta = 2, omega = 0.5, ...) {
+cv.lla2.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass", "loss"), 
+                          nfolds = 5, foldid, delta = 2, omega = 0.5,
+                          ...) {
   if (missing(pred.loss)) {
     pred.loss <- "default" 
   } else {
@@ -19,21 +20,22 @@ cv.lla.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass"
     stop("nfolds must be bigger than 3; nfolds=10 recommended")
   }
   
-  lla.gcdnet.object <- lla.gcdnet(x, y, lambda = lambda, a = a, delta = delta, 
-                                  omega = omega, ...)
-  lambda <- lla.gcdnet.object$lambda
-  nz <- lla.gcdnet.object$df
+  lla2.gcdnet.obj <- lla2.gcdnet(x, y, lambda = lambda, a = a, 
+                                 delta = delta, omega = omega, ...)
+  lambda <- lla2.gcdnet.obj$lambda
+  nz <- lla2.gcdnet.obj$df
   outlist <- as.list(seq(nfolds))
   ###Now fit the nfold models and store them
   for (i in seq(nfolds)) {
     which <- foldid == i
     y_sub <- y[!which]
-    outlist[[i]] <- lla.gcdnet(x = x[!which, , drop = FALSE], 
-                           y = y_sub, a = a, lambda = lambda, delta = delta, omega = omega, ...)
+    outlist[[i]] <- lla2.gcdnet(x = x[!which, , drop = FALSE], 
+                                y = y_sub, lambda = lambda, a = a,
+                                delta = delta, omega = omega, ...)
   }
   
   ###What to do depends on the pred.loss and the model fit
-  fun <- paste("cv", class(lla.gcdnet.object)[[2]], sep = ".")
+  fun <- paste("cv", class(lla2.gcdnet.obj)[[2]], sep = ".")
   cvstuff <- do.call(fun, list(outlist, lambda, x, y, foldid, 
                                pred.loss, delta, omega))
   cvm <- cvstuff$cvm
@@ -41,9 +43,9 @@ cv.lla.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass"
   cvname <- cvstuff$name
   out <- list(lambda = lambda, a = a, cvm = cvm, cvsd = cvsd, cvupper = cvm + cvsd, 
               cvlo = cvm - cvsd, nzero = nz, name = cvname, 
-              lla.gcdnet.fit = lla.gcdnet.object)
+              lla2.gcdnet.fit = lla2.gcdnet.obj)
   lamin <- getmin(lambda, cvm, cvsd)
   obj <- c(out, as.list(lamin))
-  class(obj) <- "cv.lla.gcdnet"
+  class(obj) <- "cv.lla2.gcdnet"
   obj
 } 
