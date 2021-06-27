@@ -1,5 +1,5 @@
 \name{predict.cv.lla2.gcdnet}
-\alias{predict.cv.lla.gcdnet}
+\alias{predict.cv.lla2.gcdnet}
 \title{make predictions from a "cv.lla2.gcdnet" object.}
 \description{
 This function makes predictions from a cross-validated gcdnet model,
