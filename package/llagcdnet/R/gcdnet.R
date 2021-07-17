@@ -1,8 +1,9 @@
 gcdnet <- function(x, y, nlambda = 100, method = c("hhsvm", 
-    "logit", "sqsvm", "ls", "er", "probit"), lambda.factor = ifelse(nobs < nvars, 0.01, 
+    "logit", "sqsvm", "ls", "er", "probit", "composite.probit"), lambda.factor = ifelse(nobs < nvars, 0.01, 
     1e-04), lambda = NULL, lambda2 = 0, pf = rep(1, nvars), pf2 = rep(1, nvars), exclude, 
     dfmax = nvars + 1, pmax = min(dfmax * 1.2, nvars), standardize = FALSE, 
-    eps = 1e-08, maxit = 1e+06, delta = 2, omega = 0.5) {
+    eps = 1e-08, maxit = 1e+06, delta = 2, omega = 0.5,
+    nthresholds = 3, thresholds = NULL, weights = rep(1, nthrs)/nthrs) {
     #################################################################################
     #data setup
     method <- match.arg(method)
@@ -56,6 +57,28 @@ gcdnet <- function(x, y, nlambda = 100, method = c("hhsvm",
         nlam <- as.integer(length(lambda))
     }
     #################################################################################
+    #thresholds setup for composite probit
+    if (is.null(thresholds)) {
+      if (nthresholds < 1) {
+        stop('nthresholds must be bigger than 1; nthresholds=3 recommended')
+      } else{
+        thresholds <- quantile(y, probs = seq(0, 1, length=(nthresholds+2))[-c(1, nthresholds+2)])
+      }
+    } else {
+      if (any(thresholds <= min(y)) || any(thresholds >= max(y))) {
+        warning("thresholds should be between min(y) and max(y)")
+      } else{
+        nthresholds <- length(thresholds)
+      }
+    }
+    nthrs <- as.integer(nthresholds)
+    athrs <- as.double(sort(thresholds))
+    #################################################################################
+    #weights setup for composite probit
+    if (length(weights) != nthrs)
+      stop("The size of composite weight factor must be same as the number of thresholds")
+    wt <- as.double(weights)
+    #################################################################################
     fit <- switch(method, 
 	hhsvm = hsvmpath(x, y, nlam, flmin, 
         ulam, isd, eps, dfmax, pmax, jd, pf, pf2, maxit, lam2, delta, 
@@ -74,7 +97,12 @@ gcdnet <- function(x, y, nlambda = 100, method = c("hhsvm",
 	    nvars, vnames),
 	probit = probitpath(x, y, nlam, flmin,
 	       ulam, isd, eps, dfmax, pmax, jd, pf, pf2, maxit, lam2, nobs,
-	       nvars, vnames))
+	       nvars, vnames),
+	composite.probit = cprpath(x, y, nlam, flmin,
+	                   ulam, isd, eps, dfmax, pmax, jd, pf, pf2, maxit, lam2, nobs,
+	                   nvars, vnames,
+	                   nthrs, athrs, wt)
+	)
     if (is.null(lambda)) 
         fit$lambda <- lamfix(fit$lambda)
     fit$call <- this.call

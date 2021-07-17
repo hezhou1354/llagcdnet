@@ -6,6 +6,7 @@
 \alias{predict.lspath}
 \alias{predict.erpath}
 \alias{predict.probitpath}
+\alias{predict.cprpath}
 \title{make predictions from a "gcdnet" object.}
 
 \description{

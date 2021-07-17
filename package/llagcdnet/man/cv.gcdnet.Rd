@@ -6,11 +6,13 @@
 \alias{cv.lspath}
 \alias{cv.erpath}
 \alias{cv.probitpath}
+\alias{cv.cprpath}
 \title{Cross-validation for gcdnet}
 \description{Does k-fold cross-validation for gcdnet, produces a plot,
 and returns a value for \code{lambda}. This function is modified based on the \code{cv} function from the \code{glmnet} package.}
 \usage{
-cv.gcdnet(x, y, lambda, pred.loss, nfolds, foldid, delta, omega,...)
+cv.gcdnet(x, y, lambda, pred.loss, nfolds, foldid, delta, omega,
+          nthresholds, thresholds, weights, ...)
 }
 \arguments{
 		\item{x}{\code{x} matrix as in \code{\link{gcdnet}}.}
@@ -30,6 +32,9 @@ cv.gcdnet(x, y, lambda, pred.loss, nfolds, foldid, delta, omega,...)
 		Default is \code{"loss"}.}
 		\item{delta}{parameter \eqn{\delta}{delta} only used in HHSVM for computing margin based loss function, only available for \code{pred.loss = "loss"}.}
 		\item{omega}{parameter \eqn{\omega}{omega} only used in expectile regression. Only available for \code{pred.loss = "loss"}.}
+		\item{nthresholds}{parameter \eqn{\nthresholds}{nthresholds} only used in composite probit regression, only available for \code{pred.loss = "loss"}.}
+		\item{thresholds}{parameter \eqn{\thresholds}{thresholds} only used in composite probit regression.}
+		\item{weights}{parameter \eqn{\weights}{weights} only used in composite probit regression.}
 		\item{\dots}{other arguments that can be passed to gcdnet.}
 
 }
@@ -117,6 +122,18 @@ set.seed(2021)
 cv3=cv.gcdnet(FHT$x, FHT$y, method ="probit",
 lambda2 = 0, pred.loss="loss", nfolds=5)
 plot(cv3)
+
+
+# To fit a LASSO penalized composite probit regression
+# we set lambda2 = 0 to disable the L2 penalty. Use the 
+# probit loss as the cross validation 
+# prediction loss. Use five-fold CV to choose 
+# the optimal lambda for the L1 penalty.
+
+set.seed(2021)
+cv4=cv.gcdnet(FHT$x, FHT$y, method ="composite.probit",
+lambda2 = 0, pred.loss="loss", nfolds=5)
+plot(cv4)
 }
 \keyword{models}
 \keyword{regression}

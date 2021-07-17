@@ -4,13 +4,14 @@
 \description{Fits a regularization path for large margin classifiers at a sequence of regularization parameters lambda.}
 \usage{
 gcdnet(x, y, nlambda = 100, 
-		method = c("hhsvm", "logit", "sqsvm", "ls", "er", "probit"),
-		lambda.factor = ifelse(nobs < nvars, 0.01, 1e-04), 
-		lambda = NULL, lambda2 = 0, 
-		pf = rep(1, nvars), pf2 = rep(1, nvars), exclude, 
-		dfmax = nvars + 1, pmax = min(dfmax * 1.2, 
-	    nvars), standardize = FALSE, eps = 1e-8, maxit = 1e6, 
-	    delta = 2, omega = 0.5)
+       method = c("hhsvm", "logit", "sqsvm", "ls", "er", "probit", "composite.probit"),
+       lambda.factor = ifelse(nobs < nvars, 0.01, 1e-04), 
+       lambda = NULL, lambda2 = 0, 
+       pf = rep(1, nvars), pf2 = rep(1, nvars), exclude, 
+       dfmax = nvars + 1, pmax = min(dfmax * 1.2, 
+       nvars), standardize = FALSE, eps = 1e-8, maxit = 1e6, 
+       delta = 2, omega = 0.5,
+       nthresholds = 3, thresholds = NULL, weights = rep(1, nthrs)/nthrs)
 }
 \arguments{
 		\item{x}{matrix of predictors, of dimension \eqn{N \times p}{N*p}; each row is an observation vector.}
@@ -22,10 +23,12 @@ gcdnet(x, y, nlambda = 100,
 		\item \code{"hhsvm"} Huberized squared hinge loss,
 		\item \code{"sqsvm"} Squared hinge loss,
 		\item \code{"logit"} logistic loss,
-		\item \code{"ls"} least square loss.
-		\item \code{"er"} expectile regression loss.
-		\item \code{"probit"} probit regression loss.
-		} Default is \code{"hhsvm"}.}
+		\item \code{"ls"} least square loss,
+		\item \code{"er"} expectile regression loss,
+		\item \code{"probit"} probit regression loss,
+		\item \code{"composite.probit"} composite probit regression loss.
+		}
+		Default is \code{"hhsvm"}.}
 		\item{lambda.factor}{The factor for getting the minimal lambda in \code{lambda} sequence, where \code{min(lambda)} = \code{lambda.factor} * \code{max(lambda)}.  \code{max(lambda)} is the smallest value of \code{lambda} for which all coefficients are zero. The default depends on the relationship between \eqn{N} (the number of rows in the matrix of predictors) and \eqn{p}{p} (the number of predictors). If \eqn{N > p}, the default is \code{0.0001},
 		close to zero.  If \eqn{N<p}, the default is \code{0.01}.
 		A very small value of \code{lambda.factor} will lead to a saturated fit. It takes no effect if there is user-defined \code{lambda} sequence.} 
@@ -66,7 +69,14 @@ gcdnet(x, y, nlambda = 100,
 		\item{maxit}{maximum number of outer-loop iterations allowed at fixed lambda value. Default is 1e6. If models do not converge, consider increasing \code{maxit}.}
 
 		\item{delta}{the parameter \eqn{\delta}{delta} in the HHSVM model. The value must be greater than 0. Default is 2.}
+		
 		\item{omega}{the parameter \eqn{\omega}{omega} in the expectile regression model. The value must be in (0,1). Default is 0.5.}
+		
+		\item{nthresholds}{the numbder of thresholds chosen in the composite probit regression model. Default is 3. }
+		
+		\item{thresholds}{a user supplied \code{thresholds} sequence. Typically, by leaving this option unspecified, users can have the program compute its own \code{thresholds} sequence based on \code{nthresholds}. The program will sort user-defined \code{thresholds} sequence in increasing order automatically.}
+		
+		\item{weights}{weights of length \code{nthresholds} used for composite probit regression. Can be 0 for some components, which implies omitting the corresponding component. Default is the same weight for each component.}
 		
 }
 
@@ -168,6 +178,9 @@ An object with S3 class \code{\link{gcdnet}}.
 		\code{lambda}.}
 		\item{dim}{dimension of coefficient matrix (ices)}
 		\item{npasses}{total number of iterations (the most inner loop) summed over all lambda values}
+		\item{nthresholds}{the actual number of \code{nthresholds} used for composite probit regression.}
+		\item{thresholds}{the actual sequence of \code{thresholds} values used for composite probit regression.}
+		\item{weights}{the actual weights used for composite probit regression.}
 		\item{jerr}{error flag, for warnings and errors, 0 if no error.}
 }
 
@@ -238,6 +251,20 @@ pf2 = c(rep(1,p-3),0.1,0.1,0.1)
 # set the L2 penalty parameter lambda2=0.01.
 m6 <- gcdnet(x=FHT$x,y=FHT$y,pf=pf,pf2=pf2,lambda2=0.01,method="probit")
 plot(m6)
+
+
+# 7. solution paths for the adaptive elastic net penalized 
+# composite probit regression.
+
+p <- ncol(FHT$x)
+# set the first three L1 penalty weights as 10 and the rest are 1.
+pf = c(10,10,10,rep(1,p-3))
+# set the last three L2 penalty weights as 0.1 and the rest are 1.
+pf2 = c(rep(1,p-3),0.1,0.1,0.1)
+# set the L2 penalty parameter lambda2=0.01.
+m7 <- gcdnet(x=FHT$x,y=FHT$y,pf=pf,pf2=pf2,lambda2=0.01,
+             method="composite.probit")
+plot(m7)
 
 }
 \keyword{models}

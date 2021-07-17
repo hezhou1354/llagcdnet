@@ -6,6 +6,7 @@
 \alias{coef.lspath}
 \alias{coef.erpath}
 \alias{coef.probitpath}
+\alias{coef.cprpath}
 \title{get coefficients or make coefficient predictions from an "gcdnet" object.}
 \description{
 Computes the coefficients or returns a list of the indices of the nonzero coefficients at the requested values for \code{lambda} from a fitted \code{\link{gcdnet}} object.
