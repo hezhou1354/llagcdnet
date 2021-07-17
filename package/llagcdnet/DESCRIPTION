@@ -1,8 +1,8 @@
 Package: llagcdnet
 Title: LASSO, Elastic Net (Adaptive) and Folded Concave (SCAD)
        Penalized Least Squares, Logistic Regression, HHSVM, 
-       Squared Hinge SVM, Expectile Regression and Probit Regression 
-       using a Fast (LLA-)GCD Algorithm
+       Squared Hinge SVM, Expectile Regression, Probit Regression 
+       and Composite Probit Regressino using a Fast (LLA-)GCD Algorithm
 Version: 1.0.0
 Date: 2021-05-03
 Author: Yi Yang <yi.yang6@mcgill.ca>, He Zhou <zhou1354@umn.edu>, 
@@ -11,12 +11,12 @@ Maintainer: He Zhou <zhou1354@umn.edu>
 Depends: Matrix, methods
 Description: A generalized coordinate descent (GCD) algorithm for computing the 
     solution path of the LASSO and elastic net (adaptive) penalized least 
-    squares, logistic regression, HHSVM, squared hinge loss SVM, expectile regression 
-    and probit regression. 
+    squares, logistic regression, HHSVM, squared hinge loss SVM, expectile regression, 
+    probit regression and composite probit regression. 
              The local linear approximation (LLA) algorithm along with the generalized 
     coordinate descent (GCD) algorithm for computing the solution path of the folded 
     concave (SCAD) penalized least squares, logistic regression, HHSVM, squared hinge 
-    loss SVM, expectile regression and probit regression. 
+    loss SVM, expectile regression, probit regression and composite probit regression. 
              When implementing the LLA algorithm, two options are available. One is three-
     step LLA initialized by zero; the other is two-step LLA initialized by tuned LASSO 
     estimator.
