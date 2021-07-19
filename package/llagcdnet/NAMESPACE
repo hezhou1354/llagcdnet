@@ -68,7 +68,9 @@ importFrom("graphics", "abline", "axis", "matplot", "points",
              "segments", "text")
 importFrom("grDevices", "rainbow")
 importFrom("methods", "new")
-importFrom("stats", "approx", "coef", "predict", "pnorm", "qnorm")
+importFrom("stats", "approx", "coef", "predict", "pnorm", "qnorm",
+           "quantile", "weighted.mean")
 importFrom("abind", "abind")
+
 
 

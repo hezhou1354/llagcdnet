@@ -65,11 +65,7 @@ gcdnet <- function(x, y, nlambda = 100, method = c("hhsvm",
         thresholds <- quantile(y, probs = seq(0, 1, length=(nthresholds+2))[-c(1, nthresholds+2)])
       }
     } else {
-      if (any(thresholds <= min(y)) || any(thresholds >= max(y))) {
-        warning("thresholds should be between min(y) and max(y)")
-      } else{
-        nthresholds <- length(thresholds)
-      }
+      nthresholds <- length(thresholds)
     }
     nthrs <- as.integer(nthresholds)
     athrs <- as.double(sort(thresholds))

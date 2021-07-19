@@ -1,6 +1,6 @@
 cv.gcdnet <- function(x, y, lambda = NULL, pred.loss = c("misclass", 
     "loss"), nfolds = 5, foldid, delta = 2, omega = 0.5, 
-    nthresholds = 3, thresholds = NULL, weights = rep(1, nthrs)/nthrs, 
+    thresholds = NULL, 
     ...) {
     if (missing(pred.loss)) 
         pred.loss <- "default" else pred.loss <- match.arg(pred.loss)
@@ -8,12 +8,9 @@ cv.gcdnet <- function(x, y, lambda = NULL, pred.loss = c("misclass",
     ###Fit the model once to get dimensions etc of output
     y <- drop(y)
     gcdnet.object <- gcdnet(x, y, lambda = lambda, delta = delta, omega = omega,
-                            nthresholds = nthresholds, thresholds = thresholds, weights = weights,
-                            ...)
+                            thresholds = thresholds, ...)
     lambda <- gcdnet.object$lambda
-    nthresholds <- gcdnet.object$nthresholds
     thresholds <- gcdnet.object$thresholds
-    weights <- gcdnet.object$weights
     # predict -> coef
     nz <- sapply(coef(gcdnet.object, type = "nonzero"), length)
     if (missing(foldid)) 
@@ -27,13 +24,14 @@ cv.gcdnet <- function(x, y, lambda = NULL, pred.loss = c("misclass",
         y_sub <- y[!which]
         outlist[[i]] <- gcdnet(x = x[!which, , drop = FALSE], y = y_sub, 
                                lambda = lambda, delta = delta, omega = omega, 
-                               nthresholds = nthresholds, thresholds = thresholds, weights = weights,
+                               thresholds = thresholds,
                                ...)
     }
     ###What to do depends on the pred.loss and the model fit
+    weights <- gcdnet.object$weights
     fun <- paste("cv", class(gcdnet.object)[[2]], sep = ".")
     cvstuff <- do.call(fun, list(outlist, lambda, x, y, foldid, 
-        pred.loss, delta, omega, nthresholds, thresholds, weights))
+        pred.loss, delta, omega, thresholds, weights))
     cvm <- cvstuff$cvm
     cvsd <- cvstuff$cvsd
     cvname <- cvstuff$name

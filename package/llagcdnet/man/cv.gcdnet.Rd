@@ -12,7 +12,7 @@
 and returns a value for \code{lambda}. This function is modified based on the \code{cv} function from the \code{glmnet} package.}
 \usage{
 cv.gcdnet(x, y, lambda, pred.loss, nfolds, foldid, delta, omega,
-          nthresholds, thresholds, weights, ...)
+          thresholds, ...)
 }
 \arguments{
 		\item{x}{\code{x} matrix as in \code{\link{gcdnet}}.}
@@ -32,10 +32,8 @@ cv.gcdnet(x, y, lambda, pred.loss, nfolds, foldid, delta, omega,
 		Default is \code{"loss"}.}
 		\item{delta}{parameter \eqn{\delta}{delta} only used in HHSVM for computing margin based loss function, only available for \code{pred.loss = "loss"}.}
 		\item{omega}{parameter \eqn{\omega}{omega} only used in expectile regression. Only available for \code{pred.loss = "loss"}.}
-		\item{nthresholds}{parameter \eqn{\nthresholds}{nthresholds} only used in composite probit regression, only available for \code{pred.loss = "loss"}.}
-		\item{thresholds}{parameter \eqn{\thresholds}{thresholds} only used in composite probit regression.}
-		\item{weights}{parameter \eqn{\weights}{weights} only used in composite probit regression.}
-		\item{\dots}{other arguments that can be passed to gcdnet.}
+		\item{thresholds}{parameter \eqn{thresholds} only used in composite probit regression, only available for \code{pred.loss = "loss"}.}
+		\item{\dots}{other arguments that can be passed to \code{gcdnet}.}
 
 }
 \details{The function runs \code{\link{gcdnet}} \code{nfolds}+1 times; the

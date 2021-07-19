@@ -21,3 +21,4 @@ cprcls <- function(cpry, predmat, weights){
   }
   apply(cprmat, c(1,2), weighted.mean, w=weights)
 }
+

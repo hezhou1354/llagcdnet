@@ -3,6 +3,9 @@ cprpath <- function(x, y, nlam, flmin, ulam, isd,
     nthrs, athrs, wt) {
     #################################################################################
     #data setup
+    if (any(athrs <= min(y)) || any(athrs >= max(y))) {
+        warning("thresholds should be between min(y) and max(y)")
+    }
     #binary responses generated for composite probit
     cpry <- matrix(0, nrow=nobs, ncol=nthrs)
     for (k in seq(nthrs)){
@@ -16,7 +19,8 @@ cprpath <- function(x, y, nlam, flmin, ulam, isd,
         eps, isd, maxit, nthrs, wt,
         nalam = integer(1), b0 = double(nthrs * nlam), 
         beta = double(pmax * nlam), ibeta = integer(pmax), nbeta = integer(nlam), 
-        alam = double(nlam), npass = integer(1), jerr = integer(1))
+        alam = double(nlam), npass = integer(1), jerr = integer(1),
+        PACKAGE = "llagcdnet")
     #################################################################################
     # output
     outlist <- cpr_getoutput(fit, maxit, pmax, nvars, vnames, nthrs)

@@ -1,5 +1,5 @@
 cv.cprpath <- function(outlist, lambda, x, y, foldid, 
-    pred.loss, delta, omega, nthresholds, thresholds, weights) {
+    pred.loss, delta, omega,thresholds, weights) {
     typenames <- c(misclass = "Misclassification Error", loss = "Composite Probit Loss")
     if (pred.loss == "default") 
         pred.loss <- "loss"
@@ -11,9 +11,10 @@ cv.cprpath <- function(outlist, lambda, x, y, foldid,
     np <- dim(x)
     nobs <- as.integer(np[1])
     nvars <- as.integer(np[2])
+    nthrs <- length(thresholds)
     #binary responses generated for composite probit
-    cpry <- matrix(0, nrow=nobs, ncol=nthresholds)
-    for (k in seq(nthresholds)){
+    cpry <- matrix(0, nrow=nobs, ncol=nthrs)
+    for (k in seq(nthrs)){
         cpry[, k] <- ifelse(y > thresholds[k], 1, -1)
     }
     
@@ -22,7 +23,7 @@ cv.cprpath <- function(outlist, lambda, x, y, foldid,
     fmin <- -fmax
 
     nfolds <- max(foldid)
-    predmat <- array(NA, dim = c(length(y), length(lambda), nthresholds))
+    predmat <- array(NA, dim = c(length(y), length(lambda), nthrs))
     nlams <- double(nfolds)
     for (i in seq(nfolds)) {
         which <- foldid == i
