@@ -3,7 +3,8 @@
 \title{Fits the folded concave regularization (SCAD) paths for large margin classifiers}
 \description{Fits a regularization path for the large margin classifiers. The regularization path is computed for the folded concave penalty (SCAD) at a grid of values for the regularization parameter lambda. The three-step local linear approximation (LLA) algorithm initialized by zero is applied.}
 \usage{
-lla.gcdnet(x, y, lambda = NULL, a = 3.7, delta = 2, omega = 0.5, ...)
+lla.gcdnet(x, y, lambda = NULL, a = 3.7, delta = 2, omega = 0.5,
+           thresholds = NULL, ...)
 }
 \arguments{
 		\item{x}{\code{x} matrix as in \code{\link{gcdnet}}.}
@@ -13,6 +14,7 @@ lla.gcdnet(x, y, lambda = NULL, a = 3.7, delta = 2, omega = 0.5, ...)
 		\item{a}{The constant for the folded concave penalty (SCAD) - default is 3.7.}
 		\item{delta}{parameter \eqn{\delta}{delta} only used in HHSVM for computing margin based loss function. The value must be greater than 0. Default is 2.}
 		\item{omega}{parameter \eqn{\omega}{omega} only used in expectile regression. The value must be in (0,1). Default is 0.5.}
+		\item{thresholds}{parameter \eqn{thresholds} only used in composite probit regression; default is \code{NULL}, and \code{\link{gcdnet}} chooses its own sequence.}
 		\item{\dots}{other arguments that can be passed to \code{\link{gcdnet}}.}
 
 
@@ -42,6 +44,9 @@ An object with S3 class \code{\link{lla.gcdnet}}.
 		\item{df}{the number of nonzero coefficients for each value of
 		\code{lambda}.}
 		\item{dim}{dimension of coefficient matrix (ices)}
+		\item{nthresholds}{the actual number of \code{nthresholds} used for composite probit regression, only available when \code{method="composite.probit"}.}
+		\item{thresholds}{the actual sequence of \code{thresholds} values used for composite probit regression, only available when \code{method="composite.probit"}.}
+		\item{weights}{the actual weights used for composite probit regression, only available when \code{method="composite.probit"}.}
 }
 
 \author{He Zhou and Hui Zou\cr
@@ -96,6 +101,12 @@ plot(m5)
 
 m6 <- lla.gcdnet(x=FHT$x, y=FHT$y, nlambda=20, method="probit")
 plot(m6)
+
+
+# 7. solution paths for the SCAD penalized composite-probit regression.
+
+m7 <- lla.gcdnet(x=FHT$x, y=FHT$y_reg, nlambda=20, method="composite.probit")
+plot(m7)
 
 }
 \keyword{models}

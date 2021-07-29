@@ -1,5 +1,6 @@
 cv.lla.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass", "loss"), 
-                      nfolds = 5, foldid, delta = 2, omega = 0.5, ...) {
+                      nfolds = 5, foldid, delta = 2, omega = 0.5,
+                      thresholds = NULL, ...) {
   if (missing(pred.loss)) {
     pred.loss <- "default" 
   } else {
@@ -20,22 +21,26 @@ cv.lla.gcdnet <- function(x, y, a = 3.7, lambda = NULL, pred.loss = c("misclass"
   }
   
   lla.gcdnet.object <- lla.gcdnet(x, y, lambda = lambda, a = a, delta = delta, 
-                                  omega = omega, ...)
+                                  omega = omega, thresholds = thresholds, ...)
   lambda <- lla.gcdnet.object$lambda
+  thresholds <- lla.gcdnet.object$thresholds
   nz <- lla.gcdnet.object$df
   outlist <- as.list(seq(nfolds))
   ###Now fit the nfold models and store them
   for (i in seq(nfolds)) {
     which <- foldid == i
     y_sub <- y[!which]
-    outlist[[i]] <- lla.gcdnet(x = x[!which, , drop = FALSE], 
-                           y = y_sub, a = a, lambda = lambda, delta = delta, omega = omega, ...)
+    outlist[[i]] <- lla.gcdnet(x = x[!which, , drop = FALSE], y = y_sub, 
+                               a = a, lambda = lambda, delta = delta, 
+                               omega = omega, thresholds = thresholds, ...)
   }
   
   ###What to do depends on the pred.loss and the model fit
+  weights <- lla.gcdnet.object$weights
   fun <- paste("cv", class(lla.gcdnet.object)[[2]], sep = ".")
   cvstuff <- do.call(fun, list(outlist, lambda, x, y, foldid, 
-                               pred.loss, delta, omega))
+                               pred.loss, delta, omega,
+                               thresholds, weights))
   cvm <- cvstuff$cvm
   cvsd <- cvstuff$cvsd
   cvname <- cvstuff$name

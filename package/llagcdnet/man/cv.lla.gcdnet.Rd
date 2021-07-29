@@ -6,11 +6,13 @@
 \alias{cv.lspath}
 \alias{cv.erpath}
 \alias{cv.probitpath}
+\alias{cv.cprpath}
 \title{Cross-validation for lla.gcdnet}
 \description{Does k-fold cross-validation for lla.gcdnet, produces a plot,
 and returns a value for \code{lambda}. This function is modified based on the \code{cv} function from the \code{glmnet} package.}
 \usage{
-cv.lla.gcdnet(x, y, a, lambda, pred.loss, nfolds, foldid, delta, omega,...)
+cv.lla.gcdnet(x, y, a, lambda, pred.loss, nfolds, foldid, 
+              delta, omega, thresholds, ...)
 }
 \arguments{
 		\item{x}{\code{x} matrix as in \code{\link{lla.gcdnet}}.}
@@ -31,6 +33,7 @@ cv.lla.gcdnet(x, y, a, lambda, pred.loss, nfolds, foldid, delta, omega,...)
 		Default is \code{"loss"}.}
 		\item{delta}{parameter \eqn{\delta}{delta} only used in HHSVM for computing margin based loss function, only available for \code{pred.loss = "loss"}.}
 		\item{omega}{parameter \eqn{\omega}{omega} only used in expectile regression. Only available for \code{pred.loss = "loss"}.}
+		\item{thresholds}{parameter \eqn{thresholds} only used in composite probit regression; default is \code{NULL}, and \code{\link{gcdnet}} chooses its own sequence.}
 		\item{\dots}{other arguments that can be passed to \code{lla.gcdnet}.}
 
 }

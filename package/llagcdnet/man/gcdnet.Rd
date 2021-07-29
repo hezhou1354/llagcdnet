@@ -178,9 +178,9 @@ An object with S3 class \code{\link{gcdnet}}.
 		\code{lambda}.}
 		\item{dim}{dimension of coefficient matrix (ices)}
 		\item{npasses}{total number of iterations (the most inner loop) summed over all lambda values}
-		\item{nthresholds}{the actual number of \code{nthresholds} used for composite probit regression.}
-		\item{thresholds}{the actual sequence of \code{thresholds} values used for composite probit regression.}
-		\item{weights}{the actual weights used for composite probit regression.}
+		\item{nthresholds}{the actual number of \code{nthresholds} used for composite probit regression, only available when \code{method="composite.probit"}.}
+		\item{thresholds}{the actual sequence of \code{thresholds} values used for composite probit regression, only available when \code{method="composite.probit"}.}
+		\item{weights}{the actual weights used for composite probit regression, only available when \code{method="composite.probit"}.}
 		\item{jerr}{error flag, for warnings and errors, 0 if no error.}
 }
 
