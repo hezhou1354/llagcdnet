@@ -1,6 +1,6 @@
-# STAT 8054 Package {llagcdnet}
+# R Package {llagcdnet}
 ## He Zhou (zhou1354@umn.edu)
-
+LASSO, Elastic Net (Adaptive) and Folded Concave (SCAD) Penalized Least Squares, Logistic Regression, HHSVM, Squared Hinge SVM, Expectile Regression, Probit Regression and Composite Probit Regressino using a Fast (LLA-)GCD Algorithm.
 
 
 To check do
